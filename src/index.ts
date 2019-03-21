@@ -102,7 +102,7 @@ const defaultOpts: HypertestDefinedOpts = {
 
 const requestWithSupertest = (requestInfo: RequestInfo, req: any) =>
   new Promise((resolve, reject) => {
-    req[requestInfo.method](requestInfo.path)
+    req[requestInfo.method.toLowerCase()](requestInfo.path)
       .send(requestInfo.body)
       .set(requestInfo.headers || {})
       .set(requestInfo.query || {})

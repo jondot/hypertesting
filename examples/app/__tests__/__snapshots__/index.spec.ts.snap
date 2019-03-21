@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`app hypertest: requests/api.yaml my-first-request: just a normal GET request 1`] = `
+  GET http://test-service/
+
+  Object {
+    "request": Object {
+      "body": undefined,
+      "headers": Object {
+        "user-agent": "node-superagent/3.8.3",
+      },
+    },
+    "response": Object {
+      "body": "{\\"hello\\":\\"world\\"}",
+      "headers": Object {
+        "connection": "close",
+        "content-length": "17",
+        "content-type": "application/json; charset=utf-8",
+        "date": "scrubbed",
+        "etag": "scrubbed",
+        "x-powered-by": "Express",
+      },
+      "status": 200,
+    },
+  }
+`;

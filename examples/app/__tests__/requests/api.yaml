@@ -1,0 +1,4 @@
+- id: my-first-request
+  desc: just a normal GET request
+  method: get
+  path: /
