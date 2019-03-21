@@ -1,11 +1,14 @@
-# init-ts-lib
+# Hypertesting
+
+The most elegant way to test your APIs.
+
 
 ## Quick Start
 
 Install:
 
 ```
-$ yarn add init-ts-lib
+$ yarn add --dev hypertesting
 ```
 
 # Contributing
@@ -14,8 +17,8 @@ Fork, implement, add tests, pull request, get my everlasting thanks and a respec
 
 ### Thanks:
 
-To all [Contributors](https://github.com/jondot/init-ts-lib/graphs/contributors) - you make this happen, thanks!
+To all [Contributors](https://github.com/jondot/hypertesting/graphs/contributors) - you make this happen, thanks!
 
 # Copyright
 
-Copyright (c) 2018 [Dotan Nahum](http://gplus.to/dotan) [@jondot](http://twitter.com/jondot). See [LICENSE](LICENSE.txt) for further details.
+Copyright (c) 2019 [@jondot](http://twitter.com/jondot). See [LICENSE](LICENSE.txt) for further details.
