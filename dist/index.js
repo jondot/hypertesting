@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12,78 +11,125 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = __importDefault(require("chalk"));
-const execa_1 = __importDefault(require("execa"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const inquirer_1 = __importDefault(require("inquirer"));
-const lodash_1 = __importDefault(require("lodash"));
-const ora_1 = __importDefault(require("ora"));
+const supertest_1 = __importDefault(require("supertest"));
+const js_yaml_1 = __importDefault(require("js-yaml"));
 const path_1 = __importDefault(require("path"));
-const url_1 = __importDefault(require("url"));
-const yargs_parser_1 = __importDefault(require("yargs-parser"));
-const help = `Please specify a package to add.
-
-$ hygen-add PACKAGE [--name NAME] [--prefix PREFIX] 
-
-  PACKAGE: npm module or Git repository
-           - note: for an npm module named 'hygen-react', PACKAGE is 'react'
-   --name: package name for a Git repo when cannot infer from repo URL (optional)
- --prefix: prefix added generators, avoids clashing names (optional)
-`;
-const tmpl = x => path_1.default.join('_templates', x);
-const resolvePackage = (pkg, opts) => {
-    if (pkg.match(/^http/)) {
-        if (opts.name) {
-            return { name: opts.name, isUrl: true };
-        }
-        return { name: lodash_1.default.last(url_1.default.parse(pkg).path.split('/')), isUrl: true };
+const fs_1 = __importDefault(require("fs"));
+const ejs_1 = __importDefault(require("ejs"));
+const lodash_1 = __importDefault(require("lodash"));
+const defaultScrubber = (result) => {
+    if (result.header.date) {
+        // eslint-disable-next-line
+        result.header.date = 'scrubbed';
     }
-    return { name: `hygen-${pkg}`, isUrl: false };
+    if (result.header.etag) {
+        // eslint-disable-next-line
+        result.header.etag = 'scrubbed';
+    }
+    return result;
 };
-const main = () => __awaiter(this, void 0, void 0, function* () {
-    const { red, green, yellow } = chalk_1.default;
-    const args = yargs_parser_1.default(process.argv.slice(2));
-    const [pkg] = args._;
-    if (!pkg) {
-        console.log(help);
-        process.exit(1);
-    }
-    const { name, isUrl } = resolvePackage(pkg, args);
-    const spinner = ora_1.default(`Adding: ${name}`).start();
-    try {
-        yield execa_1.default.shell(`${path_1.default.join(__dirname, '../node_modules/.bin/')}yarn add --dev ${isUrl ? pkg : name}`);
-        const templatePath = path_1.default.join('./node_modules', name, '_templates');
-        const exists = yield fs_extra_1.default.pathExists(templatePath);
-        yield fs_extra_1.default.mkdirp('_templates');
-        spinner.stop();
-        for (const g of yield fs_extra_1.default.readdir(templatePath)) {
-            const maybePrefixed = args.prefix ? `${args.prefix}-${g}` : g;
-            const wantedTargetPath = tmpl(maybePrefixed);
-            const sourcePath = path_1.default.join(templatePath, g);
-            if (yield fs_extra_1.default.pathExists(wantedTargetPath)) {
-                if (!(yield inquirer_1.default
-                    .prompt([
-                    {
-                        message: `'${maybePrefixed}' already exists. Overwrite? (Y/n): `,
-                        name: 'overwrite',
-                        prefix: '      🤔 :',
-                        type: 'confirm'
-                    }
-                ])
-                    .then(({ overwrite }) => overwrite))) {
-                    console.log(yellow(` skipped: ${maybePrefixed}`));
-                    continue;
+exports.defaultScrubber = defaultScrubber;
+const defaultOpts = {
+    scrubResult: defaultScrubber,
+    formatTitle: (testfile, currentRequest) => `${path_1.default.join(...lodash_1.default.takeRight(testfile.split(path_1.default.sep), 2))} ${currentRequest.id}: ${currentRequest.desc}`,
+    serializer: (value, serialize, indent) => {
+        const { req: { method, url } } = value;
+        return [
+            `  ${method} ${url.replace(/127\.0\.0\.1:\d+/, 'test-service')}\n`,
+            indent(serialize({
+                request: { body: value.req.data, headers: value.req.headers },
+                response: {
+                    headers: value.header,
+                    status: value.status,
+                    body: value.text
                 }
-            }
-            yield fs_extra_1.default.copy(sourcePath, wantedTargetPath, {
-                recursive: true
-            });
-            console.log(green(`   added: ${maybePrefixed}`));
+            }))
+        ].join('\n');
+    },
+    announce: (currentRequest) => console.log('hypertest request', currentRequest),
+    expect: null
+};
+exports.defaultOpts = defaultOpts;
+const requestWithSupertest = (requestInfo, req) => new Promise((resolve, reject) => {
+    req[requestInfo.method](requestInfo.path)
+        .send(requestInfo.body)
+        .set(requestInfo.headers || {})
+        .set(requestInfo.query || {})
+        .end((err, res) => {
+        if (err) {
+            reject(err);
         }
-    }
-    catch (ex) {
-        console.log(red(`\n\nCan't add ${name}${isUrl ? ` (source: ${pkg})` : ''}\n\n`), ex);
+        else {
+            resolve(res.toJSON());
+        }
+    });
+});
+const readAndPopulate = (testfile, context = { vars: (_p) => '' }) => {
+    const rendered = ejs_1.default.render(fs_1.default.readFileSync(testfile).toString(), context);
+    return js_yaml_1.default.safeLoad(rendered);
+};
+const supertestResultToRollingResult = (result) => ({
+    headers: result.header,
+    status: result.status,
+    body: result.text,
+    json: result.header['content-type'].match(/json/)
+        ? JSON.parse(result.text)
+        : {}
+});
+const runRequests = (testfile, app, opts) => __awaiter(this, void 0, void 0, function* () {
+    // render requests with nothing that we know in terms of vars.
+    // first request must not have vars on it
+    let requests = readAndPopulate(testfile);
+    // capture each successive call's results
+    const rollingresults = {};
+    for (let i = 0; i < requests.length; i += 1) {
+        const currentRequest = requests[i];
+        if (opts.announce) {
+            opts.announce(currentRequest);
+        }
+        // eslint-disable-next-line
+        const result = yield requestWithSupertest(currentRequest, supertest_1.default(app));
+        opts
+            .expect(opts.scrubResult(result))
+            .toMatchSnapshot(opts.formatTitle(testfile, currentRequest));
+        // prepare round for the next request, with the results of the current one.
+        // populate the rolling result:
+        rollingresults[currentRequest.id] = supertestResultToRollingResult(result);
+        // re-render the entire requests file, with our added knowledge about the
+        // universe. re-sets the 'vars' function so that it is aware of the new data.
+        // this way the previous request's results are available to the next request's
+        // descriptor to use as <%= vars('req-id.bar.baz') %>
+        requests = readAndPopulate(testfile, {
+            vars: p => lodash_1.default.get(rollingresults, p.split('.'), '')
+        });
     }
 });
-main();
+const hypertest = (createApp, opts = {}) => (folder) => __awaiter(this, void 0, void 0, function* () {
+    const mergedOpts = Object.assign({}, defaultOpts, opts);
+    if (opts.expect) {
+        opts.expect.addSnapshotSerializer({
+            test(value) {
+                return (value &&
+                    value.req &&
+                    value.req.headers &&
+                    value.req.headers['user-agent'].match(/node-superagent/));
+            },
+            print: mergedOpts.serializer
+        });
+    }
+    const suites = fs_1.default
+        .readdirSync(folder)
+        .filter(f => f.match(/\.yaml$/))
+        .map(f => path_1.default.join(folder, f));
+    // eslint-disable-next-line
+    for (const testfile of suites) {
+        // eslint-disable-next-line
+        const { app, closeApp } = yield createApp();
+        // eslint-disable-next-line
+        yield runRequests(testfile, app, mergedOpts);
+        // eslint-disable-next-line
+        yield closeApp();
+    }
+});
+exports.default = hypertest;
 //# sourceMappingURL=index.js.map
