@@ -51,7 +51,7 @@ const defaultOpts = {
 };
 exports.defaultOpts = defaultOpts;
 const requestWithSupertest = (requestInfo, req) => new Promise((resolve, reject) => {
-    req[requestInfo.method](requestInfo.path)
+    req[requestInfo.method.toLowerCase()](requestInfo.path)
         .send(requestInfo.body)
         .set(requestInfo.headers || {})
         .set(requestInfo.query || {})
