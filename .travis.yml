@@ -17,7 +17,7 @@ jobs:
           email: "jondotan@gmail.com"
           skip_cleanup: true
           api_key:
-            secure: fGqPo4don8YwuxgM/QR68RvnSD38prYHqjWyXfdYTFi5xcVvUllIO/REtbQb0X1scbCP4WlvDVYQ7iCH/eh7uXM40RO0B+KSrHOUgngKtLKF104IRLZ48U4qkrJqB+VBxXHpqe2dlQyyOU4Z0RdcSI838EN7WSP802tWC4R/Vsg3B+E/gILnzjGX4dGFdHIqTOpMpcgchQRcfXIkHpFfQWF2Ww6NFwQ5aZzhmXPOxAt9AaaIwrNoNcndh+AqshDVgZzy2+S4NtPLEaEz7YdqqogkFoG1ma+oj4ZM/MhfESYowZYLqo7iqtGFN6RGxoivTUBWwakMz9/2ELrstKD7rtT3U7Et5HSt05sRnHXgNPTSYylnZJXbgprgT/gP9rhdQAMVZS2x6fX/WG4+ifIUG78ZWLLFfMMDn6OhRzbiJsHNMrXkxgg0vuMMU6gMriNHwNsA5Tva2wvuklrqr0nBA3+7YchczQspS+akKHIDI3fXxgBTJNXlqRuz1lWfN26hNxVOzBdmxPIsfwnYC703pc46iPPrpWp5wREjKJfxy85BSvCPO8K1/T7O4CnpIlgcVIGBtVopnhoKXQNVEbiEyiU3I2vyTthgK2ieJtacsu6EeQ2zCgAC73n/9W+nexu9zXvBK7lZSIHgoDByHCKuqBY0LIwrsLg7WRA46wn/VIk=
+           secure: "RuUUpVtCtPU/ggp5OOVeC6eTdma+zOUg7iMW5X0MpufTW3Dw+qMDoZ872ly5IyednPGWKbpoYrX2be1WJf6eJ1p9z/s8d6pplRnL2dunD+hc82q2jnN5aDiTmrfraxHr4YB5QvcPQW/WECMTG0x82uebXOeEqosu7fz680WibbhvQrNdT5dmV1SItcTQvNUGmJpZKcWtg2hVh7Tfi9JKD87FpmADbhgKTFPjbuAugrV31/GlaUrwPhUfXwOV33PS8sDz1k/QBzAzlgECIeEqKb4O7qDXgN4zNDnUWqE9Gw7NwEk3bMaC9+Fyro7+VDz1n6oaUiYVMMpHlc1XLnsHk9y0NrLNlDoXktm4OjkIvNH16oZbCZgs7PEU/eQNI1KTUyO6DMxwH3BspK0OW2CpL2Ayzy57dEkisGqODRS8SSphQe3IFDeAhxqHGsUbnkaLYWSRaZ4C+1Ow9M17n5dH1ieDRvrwrr+bbFNOGnaVmyh8tNpl5lx+/VWbkQEAIQTwYOvUhYp5R3mImSlCeS+wPFrsH8q16/NTM9ltPXFwCJDblxe+DYWnkuWNvIfbxhH+MqwIeP7Qtoom94ZsntumAj3TPD3r4DATAnBisw4lOIBzBC8YYxG0Ou0K8ufg/NJ4qGi7kKwmrz0YMVm1xzJ8jR3+n0vncJ2UPNduFRbuJlg="
           on:
             tags: true
 #    - stage: docs
