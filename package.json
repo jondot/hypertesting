@@ -1,6 +1,6 @@
 {
   "name": "hypertesting",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "bin": {
@@ -22,11 +22,11 @@
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
-    "@types/js-yaml": "^3.12.0",
-    "@types/supertest": "^2.0.7",
     "@types/jest": "^24.0.11",
+    "@types/js-yaml": "^3.12.0",
     "@types/lodash": "^4.14.123",
     "@types/node": "^11.11.4",
+    "@types/supertest": "^2.0.7",
     "jest": "^24.5.0",
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.4000",
