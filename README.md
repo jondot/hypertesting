@@ -30,7 +30,7 @@ And point your Jest spec to it. Here's an example using an Express `app`:
 
 ```js
 import path from 'path'
-import hypertesting from '../../../src/index'
+import hypertesting from 'hypertesting'
 import app from '../index'
 
 const test = hypertesting(() => Promise.resolve({ 
