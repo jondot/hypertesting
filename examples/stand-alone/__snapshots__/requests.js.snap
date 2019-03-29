@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`app requests: requests/api.yaml my-first-request: just a normal GET request 1`] = `
+  GET https://google.com/
+
+  Object {
+    "request": Object {
+      "body": undefined,
+      "headers": Object {
+        "user-agent": "node-superagent/3.8.3",
+      },
+    },
+    "response": Object {
+      "body": "<HTML><HEAD><meta http-equiv=\\"content-type\\" content=\\"text/html;charset=utf-8\\">
+  <TITLE>301 Moved</TITLE></HEAD><BODY>
+  <H1>301 Moved</H1>
+  The document has moved
+  <A HREF=\\"https://www.google.com/\\">here</A>.
+  </BODY></HTML>
+  ",
+      "headers": Object {
+        "alt-svc": "quic=\\":443\\"; ma=2592000; v=\\"46,44,43,39\\"",
+        "cache-control": "public, max-age=2592000",
+        "connection": "close",
+        "content-length": "220",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "scrubbed",
+        "expires": "scrubbed",
+        "location": "https://www.google.com/",
+        "server": "gws",
+        "x-frame-options": "SAMEORIGIN",
+        "x-xss-protection": "0",
+      },
+      "status": 301,
+    },
+  }
+`;
