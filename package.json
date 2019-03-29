@@ -31,12 +31,12 @@
   },
   "dependencies": {
     "ejs": "^2.6.1",
-    "jest": "^24.5.0",
     "js-yaml": "^3.13.0",
     "lodash": "^4.17.11",
     "supertest": "^4.0.2"
   },
   "devDependencies": {
+    "jest": "^24.5.0",
     "@types/ejs": "^2.6.3",
     "@types/jest": "^24.0.11",
     "@types/js-yaml": "^3.12.0",
