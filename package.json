@@ -1,6 +1,6 @@
 {
   "name": "hypertesting",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "license": "MIT",
   "main": "dist/index.js",
   "bin": {
@@ -36,7 +36,6 @@
     "supertest": "^4.0.2"
   },
   "devDependencies": {
-    "jest": "^24.5.0",
     "@types/ejs": "^2.6.3",
     "@types/jest": "^24.0.11",
     "@types/js-yaml": "^3.12.0",
@@ -44,6 +43,7 @@
     "@types/node": "^11.11.4",
     "@types/supertest": "^2.0.7",
     "execa": "^1.0.0",
+    "jest": "^24.5.0",
     "nexe": "^2.0.0-rc.34",
     "pkg": "^4.3.7",
     "ts-jest": "^24.0.0",
