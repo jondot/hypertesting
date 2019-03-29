@@ -26,6 +26,10 @@ const defaultScrubber = (result) => {
         // eslint-disable-next-line
         result.header.etag = 'scrubbed';
     }
+    if (result.header.expires) {
+        // eslint-disable-next-line
+        result.header.expires = 'scrubbed';
+    }
     return result;
 };
 exports.defaultScrubber = defaultScrubber;
@@ -131,5 +135,6 @@ const hypertest = (createApp, opts = {}) => (folder) => __awaiter(this, void 0, 
         yield closeApp();
     }
 });
+exports.hypertest = hypertest;
 exports.default = hypertest;
 //# sourceMappingURL=index.js.map

@@ -3,9 +3,27 @@
   "version": "1.0.8",
   "license": "MIT",
   "main": "dist/index.js",
+  "bin": {
+    "hytest": "dist/runner.js"
+  },
+  "pkg": {
+    "scripts": [
+      "dist/*.js",
+      "node_modules/jest-jasmine2/build/*.js"
+    ],
+    "assets": [
+      "dist/*.js"
+    ],
+    "outPath": "standalone",
+    "targets": [
+      "node8-macos",
+      "node8-linux"
+    ]
+  },
   "scripts": {
     "start": "tsc -w",
     "watch": "jest --watch",
+    "standalone": "rm -rf standalone dist; yarn build && pkg package.json --out-path standalone && node scripts/standalone.js",
     "test": "jest",
     "test:bin": "node dist/index.js",
     "release": "yarn build && git commit -am 'build'; yarn version && git push --tags && git push origin master",
@@ -13,6 +31,7 @@
   },
   "dependencies": {
     "ejs": "^2.6.1",
+    "jest": "^24.5.0",
     "js-yaml": "^3.13.0",
     "lodash": "^4.17.11",
     "supertest": "^4.0.2"
@@ -24,9 +43,14 @@
     "@types/lodash": "^4.14.123",
     "@types/node": "^11.11.4",
     "@types/supertest": "^2.0.7",
-    "jest": "^24.5.0",
+    "execa": "^1.0.0",
+    "nexe": "^2.0.0-rc.34",
+    "pkg": "^4.3.7",
     "ts-jest": "^24.0.0",
+    "ts-node": "^8.0.3",
     "typescript": "^3.3.4000",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
     "zeroconf-typescript-eslint": "^1.0.2"
   },
   "jest": {

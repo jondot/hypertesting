@@ -68,6 +68,10 @@ const defaultScrubber = (result: ResultInfo): ResultInfo => {
     // eslint-disable-next-line
     result.header.etag = 'scrubbed'
   }
+  if (result.header.expires) {
+    // eslint-disable-next-line
+    result.header.expires = 'scrubbed'
+  }
   return result
 }
 
@@ -202,5 +206,5 @@ const hypertest = (
   }
 }
 
-export { defaultOpts, defaultScrubber }
+export { defaultOpts, defaultScrubber, hypertest }
 export default hypertest

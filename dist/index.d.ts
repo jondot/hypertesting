@@ -39,5 +39,5 @@ export interface HypertestOpts {
 declare const defaultScrubber: (result: ResultInfo) => ResultInfo;
 declare const defaultOpts: HypertestDefinedOpts;
 declare const hypertest: (createApp: CreateAppAsyncFn, opts?: HypertestOpts) => (folder: string) => Promise<void>;
-export { defaultOpts, defaultScrubber };
+export { defaultOpts, defaultScrubber, hypertest };
 export default hypertest;

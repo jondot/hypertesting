@@ -20,24 +20,15 @@ jobs:
            secure: "RuUUpVtCtPU/ggp5OOVeC6eTdma+zOUg7iMW5X0MpufTW3Dw+qMDoZ872ly5IyednPGWKbpoYrX2be1WJf6eJ1p9z/s8d6pplRnL2dunD+hc82q2jnN5aDiTmrfraxHr4YB5QvcPQW/WECMTG0x82uebXOeEqosu7fz680WibbhvQrNdT5dmV1SItcTQvNUGmJpZKcWtg2hVh7Tfi9JKD87FpmADbhgKTFPjbuAugrV31/GlaUrwPhUfXwOV33PS8sDz1k/QBzAzlgECIeEqKb4O7qDXgN4zNDnUWqE9Gw7NwEk3bMaC9+Fyro7+VDz1n6oaUiYVMMpHlc1XLnsHk9y0NrLNlDoXktm4OjkIvNH16oZbCZgs7PEU/eQNI1KTUyO6DMxwH3BspK0OW2CpL2Ayzy57dEkisGqODRS8SSphQe3IFDeAhxqHGsUbnkaLYWSRaZ4C+1Ow9M17n5dH1ieDRvrwrr+bbFNOGnaVmyh8tNpl5lx+/VWbkQEAIQTwYOvUhYp5R3mImSlCeS+wPFrsH8q16/NTM9ltPXFwCJDblxe+DYWnkuWNvIfbxhH+MqwIeP7Qtoom94ZsntumAj3TPD3r4DATAnBisw4lOIBzBC8YYxG0Ou0K8ufg/NJ4qGi7kKwmrz0YMVm1xzJ8jR3+n0vncJ2UPNduFRbuJlg="
           on:
             tags: true
-#    - stage: docs
-#      script: yarn docs:prepare && yarn docs:build
-#      node_js: "8"
-#      deploy:
-#        provider: pages
-#        local-dir: hygen.io/public
-#        skip-cleanup: true
-#        github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
-#        keep-history: true
-#    - stage: binary releases
-#      script: yarn standalone
-#      if: tag =~ ^v\d.*
-#      node_js: "8"
-#      deploy:
-#        provider: releases
-#        api_key: $GITHUB_TOKEN
-#        file_glob: true
-#        file: standalone/*
-#        skip_cleanup: true
-#        on:
-#          tags: true
+    - stage: binary releases
+      script: yarn standalone
+      if: tag =~ ^v\d.*
+      node_js: "8"
+      deploy:
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file_glob: true
+        file: standalone/*
+        skip_cleanup: true
+        on:
+          tags: true
