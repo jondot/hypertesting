@@ -7,6 +7,7 @@ A declarative and contextual contract-driven testing framework for your API.
 ✅ Use `yaml` to describe your end-to-end test stories  
 ✅ Powered by [Jest](https://jestjs.io), [supertest](https://github.com/visionmedia/supertest) and Snapshot driven testing  
 ✅ Contextual and scripted - access previous request results, add custom scripts and generate test blocks in your YAML.  
+✅ Run as a standalone binary with `hytest`
 
 
 ## Quick Start
@@ -135,9 +136,43 @@ And more generally:
 
 Where `response object` is your regular [supertest](https://github.com/visionmedia/supertest) response. So you can pick headers, body, status code and even the original request.
 
+## Standalone
 
+To start quickly or in a production environment that doesn't include Node.js, you can use Hypertesting without Node.js, or the `hypertesting` library.
 
+First, get a copy of [hytest from the Releases section](https://github.com/jondot/hypertesting/releases).
 
+Then, write your test story in `api.yaml` and use a driving script:
+
+```js
+const { hypertest } = require('/snapshot/hypertesting/dist')
+const path = require('path')
+
+const test = hypertest(
+  () => Promise.resolve({ app: 'https://google.com', closeApp: () => {} }),
+  {
+    expect
+  }
+)
+describe('app', () => {
+  it('requests', async () => {
+    await test(path.join(__dirname, 'requests'))
+  })
+})
+
+```
+
+Then run:
+
+```
+$ ls examples/stand-alone
+requests/
+requests.js
+
+$ cd examples/stand-alone && hytest requests.js
+```
+
+To run this example, check out [examples/stand-alone](examples/stand-alone).
 
 
 # Contributing
