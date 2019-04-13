@@ -18,7 +18,11 @@ const scrubber = (paths: (string | ScrubEntry)[], filler = 'scrubbed') => (
   L.forEach(
     matchers as ScrubEntry[],
     ({ path, regex, filler: matcherFiller }) =>
-      L.set(obj, path, L.get(obj, path).replace(regex, matcherFiller || filler))
+      L.set(
+        obj,
+        path,
+        L.get(obj, path).replace(new RegExp(regex), matcherFiller || filler)
+      )
   )
   return obj
 }

@@ -11,7 +11,7 @@ const scrubber = (paths, filler = 'scrubbed') => (obj) => {
     }
     const [setters, matchers] = lodash_1.default.partition(paths, lodash_1.default.isString);
     lodash_1.default.forEach(setters, p => lodash_1.default.get(obj, p) && lodash_1.default.set(obj, p, filler));
-    lodash_1.default.forEach(matchers, ({ path, regex, filler: matcherFiller }) => lodash_1.default.set(obj, path, lodash_1.default.get(obj, path).replace(regex, matcherFiller || filler)));
+    lodash_1.default.forEach(matchers, ({ path, regex, filler: matcherFiller }) => lodash_1.default.set(obj, path, lodash_1.default.get(obj, path).replace(new RegExp(regex), matcherFiller || filler)));
     return obj;
 };
 exports.default = scrubber;
