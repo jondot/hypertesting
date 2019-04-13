@@ -19,7 +19,7 @@ const path = __importStar(require("path"));
 const dist_1 = require("typeorm-fixtures-cli/dist");
 const typeorm_1 = require("typeorm");
 const fixture = (connection, file) => __awaiter(this, void 0, void 0, function* () {
-    const fixturePath = path.resolve(path.join(__dirname, file));
+    const fixturePath = path.resolve(file);
     const loader = new dist_1.Loader();
     loader.load(path.resolve(fixturePath));
     const resolver = new dist_1.Resolver();

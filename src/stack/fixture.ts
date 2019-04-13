@@ -9,7 +9,7 @@ import {
 import { getRepository } from 'typeorm'
 
 const fixture = async (connection: any, file: string) => {
-  const fixturePath = path.resolve(path.join(__dirname, file))
+  const fixturePath = path.resolve(file)
   const loader = new Loader()
 
   loader.load(path.resolve(fixturePath))
