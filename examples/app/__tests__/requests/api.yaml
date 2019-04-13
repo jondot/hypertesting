@@ -2,3 +2,12 @@
   desc: just a normal GET request
   method: get
   path: /
+- id: custom scrub
+  desc: with a custom scrub
+  method: get
+  path: /
+  scrub:
+    - path: text
+      regex: world
+      filter: universe
+    - header.connection

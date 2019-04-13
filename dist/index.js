@@ -17,21 +17,16 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const ejs_1 = __importDefault(require("ejs"));
 const lodash_1 = __importDefault(require("lodash"));
-const defaultScrubber = (result) => {
-    if (result.header.date) {
-        // eslint-disable-next-line
-        result.header.date = 'scrubbed';
-    }
-    if (result.header.etag) {
-        // eslint-disable-next-line
-        result.header.etag = 'scrubbed';
-    }
-    if (result.header.expires) {
-        // eslint-disable-next-line
-        result.header.expires = 'scrubbed';
-    }
-    return result;
-};
+const scrubber_1 = __importDefault(require("./scrubber"));
+exports.scrubber = scrubber_1.default;
+const stack_1 = __importDefault(require("./stack"));
+exports.stack = stack_1.default;
+const defaultScrubber = scrubber_1.default([
+    'header.date',
+    'header.etag',
+    'req.url',
+    'req.headers.authorization'
+]);
 exports.defaultScrubber = defaultScrubber;
 const defaultOpts = {
     scrubResult: defaultScrubber,
@@ -93,8 +88,12 @@ const runRequests = (testfile, app, opts) => __awaiter(this, void 0, void 0, fun
         }
         // eslint-disable-next-line
         const result = yield requestWithSupertest(currentRequest, supertest_1.default(app));
+        const scrubbers = currentRequest.scrub
+            ? [scrubber_1.default(currentRequest.scrub), opts.scrubResult]
+            : [opts.scrubResult];
+        const scrubbed = scrubbers.reduce((acc, f) => f(acc), result);
         opts
-            .expect(opts.scrubResult(result))
+            .expect(scrubbed)
             .toMatchSnapshot(opts.formatTitle(testfile, currentRequest));
         // prepare round for the next request, with the results of the current one.
         // populate the rolling result:

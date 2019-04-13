@@ -4,6 +4,8 @@ import path from 'path'
 import fs from 'fs'
 import ejs from 'ejs'
 import L from 'lodash'
+import scrubber, { ScrubEntry } from './scrubber'
+import stack from './stack'
 
 interface Context {
   vars: (p: string) => string
@@ -22,6 +24,7 @@ export interface RequestInfo {
   body?: any
   headers?: any
   query?: any
+  scrub?: (string | ScrubEntry)[]
 }
 
 export interface ResultInfo {
@@ -59,21 +62,12 @@ export interface HypertestOpts {
   expect?: any
 }
 
-const defaultScrubber = (result: ResultInfo): ResultInfo => {
-  if (result.header.date) {
-    // eslint-disable-next-line
-    result.header.date = 'scrubbed'
-  }
-  if (result.header.etag) {
-    // eslint-disable-next-line
-    result.header.etag = 'scrubbed'
-  }
-  if (result.header.expires) {
-    // eslint-disable-next-line
-    result.header.expires = 'scrubbed'
-  }
-  return result
-}
+const defaultScrubber = scrubber([
+  'header.date',
+  'header.etag',
+  'req.url',
+  'req.headers.authorization'
+])
 
 const defaultOpts: HypertestDefinedOpts = {
   scrubResult: defaultScrubber,
@@ -104,7 +98,10 @@ const defaultOpts: HypertestDefinedOpts = {
   expect: null
 }
 
-const requestWithSupertest = (requestInfo: RequestInfo, req: any) =>
+const requestWithSupertest = (
+  requestInfo: RequestInfo,
+  req: any
+): Promise<ResultInfo> =>
   new Promise((resolve, reject) => {
     req[requestInfo.method.toLowerCase()](requestInfo.path)
       .send(requestInfo.body)
@@ -114,7 +111,7 @@ const requestWithSupertest = (requestInfo: RequestInfo, req: any) =>
         if (err) {
           reject(err)
         } else {
-          resolve(res.toJSON())
+          resolve(res.toJSON() as ResultInfo)
         }
       })
   })
@@ -124,7 +121,7 @@ const readAndPopulate = (
   context: Context = { vars: (_p: string) => '' }
 ) => {
   const rendered = ejs.render(fs.readFileSync(testfile).toString(), context)
-  return yaml.safeLoad(rendered)
+  return yaml.safeLoad(rendered) as RequestInfo[]
 }
 const supertestResultToRollingResult = (result: any) => ({
   headers: result.header,
@@ -155,8 +152,16 @@ const runRequests = async (
     }
     // eslint-disable-next-line
     const result = await requestWithSupertest(currentRequest, request(app))
+    const scrubbers = currentRequest.scrub
+      ? [scrubber(currentRequest.scrub), opts.scrubResult]
+      : [opts.scrubResult]
+
+    const scrubbed = scrubbers.reduce(
+      (acc: ResultInfo, f: Function) => f(acc),
+      result
+    )
     opts
-      .expect(opts.scrubResult(result as ResultInfo))
+      .expect(scrubbed)
       .toMatchSnapshot(opts.formatTitle(testfile, currentRequest))
 
     // prepare round for the next request, with the results of the current one.
@@ -206,5 +211,5 @@ const hypertest = (
   }
 }
 
-export { defaultOpts, defaultScrubber, hypertest }
+export { defaultOpts, defaultScrubber, hypertest, scrubber, stack }
 export default hypertest

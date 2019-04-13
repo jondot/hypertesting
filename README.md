@@ -4,10 +4,13 @@
 
 A declarative and contextual contract-driven testing framework for your API.
 
-✅ Use `yaml` to describe your end-to-end test stories  
+
+✅ Use `integration` to compose an first-class [hypercontroller](https://github.com/jondot/hypercontroller) and [TypeORM](https://typeorm.io) based integration testing experience   
+✅ Use `yaml` to describe your end-to-end acceptance tests stories  
+✅ Write contextual acceptance tests without code - access previous request results, add custom scripts and generate test blocks in your YAML.  
 ✅ Powered by [Jest](https://jestjs.io), [supertest](https://github.com/visionmedia/supertest) and Snapshot driven testing  
-✅ Contextual and scripted - access previous request results, add custom scripts and generate test blocks in your YAML.  
-✅ Run as a standalone binary with `hytest`
+✅ Custom response scrubbing for secrets and sensitive data  
+✅ Run as a standalone binary with `hytest`  
 
 
 ## Quick Start
@@ -18,6 +21,11 @@ Install:
 $ yarn add --dev hypertesting
 ```
 
+
+## Acceptance Tests
+
+In this way, you can use Hypertesting in any project, including projects that are not related to Node.js. 
+
 Write your testing story (`requests/api.yaml`):
 
 ```yaml
@@ -27,7 +35,24 @@ Write your testing story (`requests/api.yaml`):
   path: /
 ```
 
-And point your Jest spec to it. Here's an example using an Express `app`:
+If you want to scrub sensitive data or remove unstable snapshot results (things that change between runs, such as dates):
+
+
+```yaml
+- id: my-first-request
+  desc: just a normal GET request
+  method: get
+  path: /
+  scrub:
+  - header.connection
+```
+
+In any case hypertesting comes with default scrubbing logic, and this addition would be on top of it.
+
+Now create a Jest spec and point it to your yaml file. In addition you need to specify how to open and close your app.
+
+
+Here's an example using an Express `app`:
 
 ```js
 import path from 'path'
@@ -51,9 +76,13 @@ You should have your expected results in `__snapshots__`. Use Jest as you would 
 $ yarn jest
 ```
 
-## Overview
+To see this in action you can run the tests in [examples/app]:
 
-You can use hypertesting for black-box and white-box testing. In addition, it is declarative by nature -- the idea being that you write `yaml` stories to represent your acceptance tests, canary tests, or end-to-end tests and these can be written by a non-technical person.
+```
+$ cd examples/app
+$ yarn && yarn test
+```
+
 
 
 ### White Box Testing
@@ -136,7 +165,7 @@ And more generally:
 
 Where `response object` is your regular [supertest](https://github.com/visionmedia/supertest) response. So you can pick headers, body, status code and even the original request.
 
-## Standalone
+### Standalone
 
 To start quickly or in a production environment that doesn't include Node.js, you can use Hypertesting without Node.js, or the `hypertesting` library.
 
@@ -173,6 +202,72 @@ $ cd examples/stand-alone && hytest requests.js
 ```
 
 To run this example, check out [examples/stand-alone](examples/stand-alone).
+
+
+
+
+
+
+
+
+## Fullstack Integration Tests
+
+If you use [hypercontroller](https://github.com/jondot/hypercontroller) and [TypeORM](https://typeorm.io) then Hypertesting is optimized to give you a first class API testing experience. 
+
+
+It should look like this:
+
+```js
+import createServer from '../../server'
+import { stack: { integration } } from 'hypertesting'
+
+const scrubPaths = [
+  'header.date',
+  'header.etag',
+  'req.url',
+  'req.headers.authorization',
+  { path: 'text', regex: /"id":.*,/, filler: '"id":"scrubbed",' }
+]
+const req = integration(
+  createServer,  // a hypercontroller friendly createServer
+  scrubPaths, // see above
+  'users.yaml' // database fixture, loaded before each test
+)
+
+describe('account', () => {
+  req('should forbid access without a token', async (request, snapshot) => {
+    snapshot(await request.get('/account'))
+  })
+})
+```
+
+And `createServer` simply returns a Hypercontroller server:
+
+```js
+const createServer = () =>
+  server
+    .start(createConnection)
+    .then(({ opts }) => console.log(`Listening on ${opts.port}`))
+)
+```
+
+## Scrubber
+
+You can use hypertesting's scrubber for anything you like without having to use the whole thing:
+
+```js
+import { scrubber } from 'hypertesting'
+
+const scrub = scrubber([
+  'header.x-site'
+])
+
+it("should make a request", async ()=>{
+  expect(scrub(await request("/foo/bar"))).toMatchSnapshot()
+})
+```
+
+
 
 
 # Contributing

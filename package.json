@@ -33,7 +33,9 @@
     "ejs": "^2.6.1",
     "js-yaml": "^3.13.0",
     "lodash": "^4.17.11",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "typeorm": "^0.2.16",
+    "typeorm-fixtures-cli": "^1.1.1"
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
