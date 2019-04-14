@@ -19,10 +19,14 @@ const integration = (createServer, scrubPaths, fixturePath) => (desc, fn) => {
     const snapshot = (req) => expect(scrubRequest(req)).toMatchSnapshot();
     it(desc, () => __awaiter(this, void 0, void 0, function* () {
         const server = yield createServer();
-        yield fixture_1.default(server.connection, fixturePath);
+        if (server.connection) {
+            yield fixture_1.default(server.connection, fixturePath);
+        }
         const request = supertest_1.default(server.app);
         yield fn(request, snapshot);
-        yield server.connection.close();
+        if (server.connection) {
+            yield server.connection.close();
+        }
     }));
 };
 exports.default = integration;

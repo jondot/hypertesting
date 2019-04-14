@@ -11,10 +11,14 @@ const integration = (
   const snapshot = (req: any) => expect(scrubRequest(req)).toMatchSnapshot()
   it(desc, async () => {
     const server = await createServer()
-    await fixture(server.connection, fixturePath)
+    if (server.connection) {
+      await fixture(server.connection, fixturePath)
+    }
     const request = supertest(server.app)
     await fn(request, snapshot)
-    await server.connection.close()
+    if (server.connection) {
+      await server.connection.close()
+    }
   })
 }
 
